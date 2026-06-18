@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stock Cupboard Scanner</title>
+  <style>
+    :root {
+      --orange: #f4a623;
+      --orange-dark: #e08e0b;
+      --green: #3d9b54;
+      --red: #d64545;
+      --bg: #f7f5f2;
+      --ink: #2b2b2b;
+      --muted: #767676;
+      --card: #ffffff;
+      --radius: 14px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      padding: 16px;
+      padding-bottom: 60px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    h1 {
+      font-size: 1.25rem;
+      margin: 0 0 4px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+    .mode-toggle {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .mode-toggle button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      background: var(--card);
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .mode-toggle button.active {
+      background: var(--orange);
+      border-color: var(--orange-dark);
+      color: white;
+      font-weight: 600;
+    }
+    .mode-toggle button.active.add-mode {
+      background: var(--green);
+      border-color: #2f7d42;
+    }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    #video-wrap {
+      position: relative;
+      width: 100%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #000;
+      aspect-ratio: 4/3;
+      margin-bottom: 12px;
+    }
+    #video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .scan-line {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      top: 50%;
+      height: 2px;
+      background: var(--orange);
+      box-shadow: 0 0 8px var(--orange);
+    }
+    button.primary {
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      background: var(--orange);
+      color: white;
+      cursor: pointer;
+    }
+    button.primary:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    button.primary.green {
+      background: var(--green);
+    }
+    button.secondary {
+      width: 100%;
+      padding: 12px;
+      font-size: 0.95rem;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: white;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    input[type="number"], input[type="text"], select {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      margin-bottom: 12px;
+    }
+    label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .product-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .product-stock {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .status {
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 14px;
+      font-size: 0.9rem;
+      display: none;
+    }
+    .status.success {
+      background: #e7f5ea;
+      color: var(--green);
+      display: block;
+    }
+    .status.error {
+      background: #fbe9e9;
+      color: var(--red);
+      display: block;
+    }
+    .status.info {
+      background: #fff4e0;
+      color: var(--orange-dark);
+      display: block;
+    }
+    .hidden { display: none !important; }
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.5);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 6px;
+      vertical-align: -2px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #setup-url-card input {
+      font-size: 0.8rem;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+ 
+  <h1>📦 Stock Cupboard Scanner</h1>
+  <div class="subtitle" id="subtitle">Scan an item barcode to log it as taken</div>
+ 
+  <!-- ONE-TIME SETUP: Apps Script URL -->
+  <div class="card hidden" id="setup-url-card">
+    <label for="apps-script-url">Paste your Apps Script Web App URL here (one-time setup, saved on this device)</label>
+    <input type="text" id="apps-script-url" placeholder="https://script.google.com/macros/s/.../exec">
+    <button class="primary" id="btn-save-url">Save and continue</button>
+  </div>
+ 
+  <div id="main-app" class="hidden">
+    <div class="mode-toggle">
+      <button id="btn-take-mode" class="active">Take stock</button>
+      <button id="btn-add-mode">Add stock</button>
+      <button id="btn-setup-mode">Setup: barcodes</button>
+    </div>
+ 
+    <div class="card">
+      <div id="video-wrap">
+        <video id="video" muted playsinline></video>
+        <div class="scan-line"></div>
+      </div>
+      <button class="primary" id="btn-start-camera">📷 Tap to start camera</button>
+      <button class="secondary hidden" id="btn-rescan">🔄 Scan again</button>
+    </div>
+ 
+    <div id="status" class="status"></div>
+ 
+    <!-- TAKE STOCK confirm panel -->
+    <div class="card hidden" id="take-panel">
+      <div class="product-name" id="take-product-name"></div>
+      <div class="product-stock" id="take-product-stock"></div>
+      <label for="take-qty">Quantity taken</label>
+      <input type="number" id="take-qty" value="1" min="1" step="1">
+      <button class="primary" id="btn-confirm-take">Log as taken</button>
+    </div>
+ 
+    <!-- ADD STOCK confirm panel -->
+    <div class="card hidden" id="add-panel">
+      <div class="product-name" id="add-product-name"></div>
+      <div class="product-stock" id="add-product-stock"></div>
+      <label for="add-qty">Quantity received</label>
+      <input type="number" id="add-qty" value="1" min="1" step="1">
+      <button class="primary green" id="btn-confirm-add">Log as added</button>
+    </div>
+ 
+    <!-- SETUP MODE assign panel -->
+    <div class="card hidden" id="setup-panel">
+      <div class="subtitle">Scanned barcode: <strong id="setup-barcode-display"></strong></div>
+      <label for="setup-sku-select">Which product is this?</label>
+      <select id="setup-sku-select"></select>
+      <button class="primary" id="btn-confirm-setup">Save barcode to this product</button>
+    </div>
+ 
+    <button class="secondary" id="btn-change-url" style="margin-top:20px;">⚙️ Change Apps Script URL</button>
+  </div>
+ 
+  <script src="https://unpkg.com/@zxing/library@0.20.0/umd/index.min.js"></script>
+  <script>
+    // ---- APPS SCRIPT URL (one-time setup, stored in this browser) ----
+    let APPS_SCRIPT_URL = localStorage.getItem('stockScannerUrl') || '';
+ 
+    function showUrlSetup() {
+      document.getElementById('setup-url-card').classList.remove('hidden');
+      document.getElementById('main-app').classList.add('hidden');
+      document.getElementById('apps-script-url').value = APPS_SCRIPT_URL;
+    }
+ 
+    function showMainApp() {
+      document.getElementById('setup-url-card').classList.add('hidden');
+      document.getElementById('main-app').classList.remove('hidden');
+    }
+ 
+    document.getElementById('btn-save-url').addEventListener('click', function () {
+      const url = document.getElementById('apps-script-url').value.trim();
+      if (!url.startsWith('https://script.google.com/')) {
+        alert('That doesn\'t look like a valid Apps Script Web App URL. It should start with https://script.google.com/');
+        return;
+      }
+      APPS_SCRIPT_URL = url;
+      localStorage.setItem('stockScannerUrl', url);
+      showMainApp();
+    });
+ 
+    document.getElementById('btn-change-url').addEventListener('click', showUrlSetup);
+ 
+    if (!APPS_SCRIPT_URL) {
+      showUrlSetup();
+    } else {
+      showMainApp();
+    }
+ 
+    // ---- API CALL HELPER ----
+    async function callApi(action, params) {
+      const url = new URL(APPS_SCRIPT_URL);
+      url.searchParams.set('action', action);
+      for (const key in params) {
+        url.searchParams.set(key, params[key]);
+      }
+      const response = await fetch(url.toString());
+      if (!response.ok) {
+        throw new Error('Server error: ' + response.status);
+      }
+      const data = await response.json();
+      if (data && data.error) {
+        throw new Error(data.error);
+      }
+      return data;
+    }
+ 
+    // ---- STATE ----
+    let mode = 'take'; // 'take' | 'add' | 'setup'
+    let codeReader = null;
+    let scanning = false;
+    let lastScannedCode = null;
+    let allProducts = [];
+    let mediaStream = null;
+ 
+    const videoEl = document.getElementById('video');
+    const statusEl = document.getElementById('status');
+    const takePanel = document.getElementById('take-panel');
+    const addPanel = document.getElementById('add-panel');
+    const setupPanel = document.getElementById('setup-panel');
+    const subtitleEl = document.getElementById('subtitle');
+ 
+    // ---- MODE SWITCHING ----
+    document.getElementById('btn-take-mode').addEventListener('click', function () { setMode('take'); });
+    document.getElementById('btn-add-mode').addEventListener('click', function () { setMode('add'); });
+    document.getElementById('btn-setup-mode').addEventListener('click', function () { setMode('setup'); });
+ 
+    function setMode(newMode) {
+      mode = newMode;
+      const takeBtn = document.getElementById('btn-take-mode');
+      const addBtn = document.getElementById('btn-add-mode');
+      const setupBtn = document.getElementById('btn-setup-mode');
+      takeBtn.classList.toggle('active', mode === 'take');
+      addBtn.classList.toggle('active', mode === 'add');
+      addBtn.classList.toggle('add-mode', mode === 'add');
+      setupBtn.classList.toggle('active', mode === 'setup');
+ 
+      if (mode === 'take') {
+        subtitleEl.textContent = 'Scan an item barcode to log it as taken';
+      } else if (mode === 'add') {
+        subtitleEl.textContent = 'Scan an item barcode to log new stock arriving';
+      } else {
+        subtitleEl.textContent = 'Scan a barcode, then tell us which product it belongs to';
+      }
+ 
+      hidePanels();
+      clearStatus();
+      if (mode === 'setup' && allProducts.length === 0) {
+        loadProducts();
+      }
+    }
+ 
+    function hidePanels() {
+      takePanel.classList.add('hidden');
+      addPanel.classList.add('hidden');
+      setupPanel.classList.add('hidden');
+    }
+ 
+    function showStatus(message, type) {
+      statusEl.textContent = message;
+      statusEl.className = 'status ' + type;
+    }
+    function clearStatus() {
+      statusEl.className = 'status';
+      statusEl.textContent = '';
+    }
+ 
+    // ---- CAMERA / SCANNING ----
+    async function startScanning() {
+      if (scanning) return;
+      scanning = true;
+      clearStatus();
+ 
+      try {
+        if (!codeReader) {
+          codeReader = new ZXing.BrowserMultiFormatReader();
+        }
+ 
+        try {
+          mediaStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: 'environment' } },
+            audio: false
+          });
+        } catch (e) {
+          mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        }
+ 
+        videoEl.srcObject = mediaStream;
+        await videoEl.play();
+ 
+        codeReader.decodeFromStream(mediaStream, videoEl, (result, err) => {
+          if (result) {
+            const code = result.getText();
+            if (code !== lastScannedCode) {
+              lastScannedCode = code;
+              handleScan(code);
+            }
+          }
+        });
+      } catch (e) {
+        let msg = 'Camera error: ' + e.message;
+        if (e.name === 'NotAllowedError') {
+          msg = 'Camera access was denied. Check your browser/phone Settings > Camera permissions for this site, then reload.';
+        } else if (e.name === 'NotFoundError') {
+          msg = 'No camera was found on this device.';
+        }
+        showStatus(msg, 'error');
+        scanning = false;
+      }
+    }
+ 
+    function stopScanning() {
+      if (codeReader) {
+        try { codeReader.reset(); } catch (e) {}
+      }
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+        mediaStream = null;
+      }
+      scanning = false;
+    }
+ 
+    document.getElementById('btn-start-camera').addEventListener('click', function () {
+      this.classList.add('hidden');
+      document.getElementById('btn-rescan').classList.remove('hidden');
+      startScanning();
+    });
+ 
+    document.getElementById('btn-rescan').addEventListener('click', function () {
+      lastScannedCode = null;
+      hidePanels();
+      clearStatus();
+      if (!scanning) startScanning();
+    });
+ 
+    function handleScan(barcode) {
+      stopScanning();
+      if (mode === 'take') {
+        handleTakeScan(barcode);
+      } else if (mode === 'add') {
+        handleAddScan(barcode);
+      } else {
+        handleSetupScan(barcode);
+      }
+    }
+ 
+    // ---- TAKE STOCK FLOW ----
+    async function handleTakeScan(barcode) {
+      showStatus('Looking up barcode…', 'info');
+      try {
+        const product = await callApi('lookup', { barcode: barcode });
+        if (!product) {
+          showStatus('No product found for barcode ' + barcode + '. Use "Setup: barcodes" to assign it.', 'error');
+          return;
+        }
+        clearStatus();
+        document.getElementById('take-product-name').textContent = product.name;
+        document.getElementById('take-product-stock').textContent =
+          'Current stock: ' + product.stock + (product.target != null ? ' (target ' + product.target + ')' : '');
+        document.getElementById('take-qty').value = 1;
+        takePanel.classList.remove('hidden');
+        window.currentTakeSku = product.sku;
+      } catch (err) {
+        showStatus('Error: ' + err.message, 'error');
+      }
+    }
+ 
+    document.getElementById('btn-confirm-take').addEventListener('click', async function () {
+      const qty = document.getElementById('take-qty').value;
+      const btn = this;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Saving…';
+      try {
+        const result = await callApi('takeStock', { sku: window.currentTakeSku, qty: qty });
+        showStatus('✅ Logged: ' + result.qty + ' x ' + result.name + ' taken. New stock: ' + result.newStock, 'success');
+        takePanel.classList.add('hidden');
+        lastScannedCode = null;
+        startScanning();
+      } catch (err) {
+        showStatus('Error: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Log as taken';
+      }
+    });
+ 
+    // ---- ADD STOCK FLOW ----
+    async function handleAddScan(barcode) {
+      showStatus('Looking up barcode…', 'info');
+      try {
+        const product = await callApi('lookup', { barcode: barcode });
+        if (!product) {
+          showStatus('No product found for barcode ' + barcode + '. Use "Setup: barcodes" to assign it.', 'error');
+          return;
+        }
+        clearStatus();
+        document.getElementById('add-product-name').textContent = product.name;
+        document.getElementById('add-product-stock').textContent =
+          'Current stock: ' + product.stock + (product.target != null ? ' (target ' + product.target + ')' : '');
+        document.getElementById('add-qty').value = 1;
+        addPanel.classList.remove('hidden');
+        window.currentAddSku = product.sku;
+      } catch (err) {
+        showStatus('Error: ' + err.message, 'error');
+      }
+    }
+ 
+    document.getElementById('btn-confirm-add').addEventListener('click', async function () {
+      const qty = document.getElementById('add-qty').value;
+      const btn = this;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Saving…';
+      try {
+        const result = await callApi('addStock', { sku: window.currentAddSku, qty: qty });
+        showStatus('✅ Logged: ' + result.qty + ' x ' + result.name + ' added. New stock: ' + result.newStock, 'success');
+        addPanel.classList.add('hidden');
+        lastScannedCode = null;
+        startScanning();
+      } catch (err) {
+        showStatus('Error: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Log as added';
+      }
+    });
+ 
+    // ---- SETUP MODE FLOW ----
+    async function loadProducts() {
+      try {
+        const products = await callApi('products', {});
+        allProducts = products;
+        const select = document.getElementById('setup-sku-select');
+        select.innerHTML = '';
+        products.forEach(function (p) {
+          const opt = document.createElement('option');
+          opt.value = p.sku;
+          opt.textContent = (p.hasBarcode ? '✓ ' : '') + p.name + ' (' + p.sku + ')';
+          select.appendChild(opt);
+        });
+      } catch (err) {
+        showStatus('Could not load product list: ' + err.message, 'error');
+      }
+    }
+ 
+    function handleSetupScan(barcode) {
+      clearStatus();
+      document.getElementById('setup-barcode-display').textContent = barcode;
+      setupPanel.classList.remove('hidden');
+      window.currentSetupBarcode = barcode;
+    }
+ 
+    document.getElementById('btn-confirm-setup').addEventListener('click', async function () {
+      const sku = document.getElementById('setup-sku-select').value;
+      const barcode = window.currentSetupBarcode;
+      const btn = this;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>Saving…';
+      try {
+        const result = await callApi('recordBarcode', { sku: sku, barcode: barcode });
+        showStatus('✅ Barcode ' + result.barcode + ' saved to ' + result.name, 'success');
+        setupPanel.classList.add('hidden');
+        lastScannedCode = null;
+        loadProducts();
+        startScanning();
+      } catch (err) {
+        showStatus('Error: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save barcode to this product';
+      }
+    });
+  </script>
+</body>
+</html>
