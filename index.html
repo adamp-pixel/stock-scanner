@@ -143,6 +143,27 @@
       color: var(--muted);
       margin-bottom: 14px;
     }
+    .reason-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .reason-btn {
+      padding: 12px 8px;
+      font-size: 0.88rem;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: white;
+      cursor: pointer;
+      color: var(--ink);
+    }
+    .reason-btn.selected {
+      background: var(--orange);
+      border-color: var(--orange-dark);
+      color: white;
+      font-weight: 600;
+    }
     .status {
       padding: 12px;
       border-radius: 10px;
@@ -220,6 +241,18 @@
       <div class="product-stock" id="take-product-stock"></div>
       <label for="take-qty">Quantity taken</label>
       <input type="number" id="take-qty" value="1" min="1" step="1">
+ 
+      <label>Reason</label>
+      <div class="reason-grid" id="take-reason-grid">
+        <button type="button" class="reason-btn" data-reason="Marketing">Marketing</button>
+        <button type="button" class="reason-btn" data-reason="Customer">Customer</button>
+        <button type="button" class="reason-btn" data-reason="Warranty">Warranty</button>
+        <button type="button" class="reason-btn" data-reason="Product Testing">Product Testing</button>
+        <button type="button" class="reason-btn" data-reason="Stock Adjust">Stock Adjust</button>
+        <button type="button" class="reason-btn" data-reason="Other">Other</button>
+      </div>
+      <input type="text" id="take-reason-other-text" class="hidden" placeholder="Type a reason…">
+ 
       <button class="primary" id="btn-confirm-take">Log as taken</button>
     </div>
  
@@ -229,6 +262,15 @@
       <div class="product-stock" id="add-product-stock"></div>
       <label for="add-qty">Quantity received</label>
       <input type="number" id="add-qty" value="1" min="1" step="1">
+ 
+      <label>Reason</label>
+      <div class="reason-grid" id="add-reason-grid">
+        <button type="button" class="reason-btn" data-reason="Stock Adjust">Stock Adjust</button>
+        <button type="button" class="reason-btn" data-reason="Return">Return</button>
+        <button type="button" class="reason-btn" data-reason="Other">Other</button>
+      </div>
+      <input type="text" id="add-reason-other-text" class="hidden" placeholder="Type a reason…">
+ 
       <button class="primary green" id="btn-confirm-add">Log as added</button>
     </div>
  
@@ -454,6 +496,46 @@
       }
     }
  
+    // ---- REASON PICKER (shared helper, used by both Take and Add panels) ----
+    const reasonState = { take: '', add: '' };
+ 
+    function setupReasonPicker(prefix) {
+      const grid = document.getElementById(prefix + '-reason-grid');
+      const otherInput = document.getElementById(prefix + '-reason-other-text');
+      grid.querySelectorAll('.reason-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          grid.querySelectorAll('.reason-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          if (btn.dataset.reason === 'Other') {
+            otherInput.classList.remove('hidden');
+            otherInput.focus();
+            reasonState[prefix] = ''; // filled in from the text box on submit
+          } else {
+            otherInput.classList.add('hidden');
+            reasonState[prefix] = btn.dataset.reason;
+          }
+        });
+      });
+    }
+    setupReasonPicker('take');
+    setupReasonPicker('add');
+ 
+    function resetReasonPicker(prefix) {
+      reasonState[prefix] = '';
+      document.getElementById(prefix + '-reason-grid').querySelectorAll('.reason-btn').forEach(b => b.classList.remove('selected'));
+      const otherInput = document.getElementById(prefix + '-reason-other-text');
+      otherInput.value = '';
+      otherInput.classList.add('hidden');
+    }
+ 
+    function getSelectedReason(prefix) {
+      const grid = document.getElementById(prefix + '-reason-grid');
+      const selectedBtn = grid.querySelector('.reason-btn.selected');
+      const isOtherSelected = selectedBtn?.dataset.reason === 'Other';
+      const otherText = document.getElementById(prefix + '-reason-other-text').value.trim();
+      return isOtherSelected ? otherText : reasonState[prefix];
+    }
+ 
     // ---- TAKE STOCK FLOW ----
     async function handleTakeScan(barcode) {
       showStatus('Looking up barcode…', 'info');
@@ -468,6 +550,7 @@
         document.getElementById('take-product-stock').textContent =
           'Current stock: ' + product.stock + (product.target != null ? ' (target ' + product.target + ')' : '');
         document.getElementById('take-qty').value = 1;
+        resetReasonPicker('take');
         takePanel.classList.remove('hidden');
         window.currentTakeSku = product.sku;
       } catch (err) {
@@ -477,12 +560,19 @@
  
     document.getElementById('btn-confirm-take').addEventListener('click', async function () {
       const qty = document.getElementById('take-qty').value;
+      const reason = getSelectedReason('take');
+ 
+      if (!reason) {
+        showStatus('Please choose a reason (or type one under "Other") before logging.', 'error');
+        return;
+      }
+ 
       const btn = this;
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span>Saving…';
       try {
-        const result = await callApi('takeStock', { sku: window.currentTakeSku, qty: qty });
-        showStatus('✅ Logged: ' + result.qty + ' x ' + result.name + ' taken. New stock: ' + result.newStock, 'success');
+        const result = await callApi('takeStock', { sku: window.currentTakeSku, qty: qty, reason: reason });
+        showStatus('✅ Logged: ' + result.qty + ' x ' + result.name + ' taken (' + reason + '). New stock: ' + result.newStock, 'success');
         takePanel.classList.add('hidden');
         lastScannedCode = null;
         startScanning();
@@ -508,6 +598,7 @@
         document.getElementById('add-product-stock').textContent =
           'Current stock: ' + product.stock + (product.target != null ? ' (target ' + product.target + ')' : '');
         document.getElementById('add-qty').value = 1;
+        resetReasonPicker('add');
         addPanel.classList.remove('hidden');
         window.currentAddSku = product.sku;
       } catch (err) {
@@ -517,12 +608,19 @@
  
     document.getElementById('btn-confirm-add').addEventListener('click', async function () {
       const qty = document.getElementById('add-qty').value;
+      const reason = getSelectedReason('add');
+ 
+      if (!reason) {
+        showStatus('Please choose a reason (or type one under "Other") before logging.', 'error');
+        return;
+      }
+ 
       const btn = this;
       btn.disabled = true;
       btn.innerHTML = '<span class="spinner"></span>Saving…';
       try {
-        const result = await callApi('addStock', { sku: window.currentAddSku, qty: qty });
-        showStatus('✅ Logged: ' + result.qty + ' x ' + result.name + ' added. New stock: ' + result.newStock, 'success');
+        const result = await callApi('addStock', { sku: window.currentAddSku, qty: qty, reason: reason });
+        showStatus('✅ Logged: ' + result.qty + ' x ' + result.name + ' added (' + reason + '). New stock: ' + result.newStock, 'success');
         addPanel.classList.add('hidden');
         lastScannedCode = null;
         startScanning();
