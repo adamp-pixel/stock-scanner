@@ -9,6 +9,7 @@
       --orange: #f4a623;
       --orange-dark: #e08e0b;
       --green: #3d9b54;
+      --green-dark: #2f7d42;
       --red: #d64545;
       --bg: #f7f5f2;
       --ink: #2b2b2b;
@@ -18,665 +19,734 @@
     }
     * { box-sizing: border-box; }
     body {
-      margin: 0;
+      margin: 0 auto;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
       color: var(--ink);
       padding: 16px;
-      padding-bottom: 60px;
+      padding-bottom: 80px;
       max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
     }
-    h1 {
-      font-size: 1.25rem;
-      margin: 0 0 4px;
-    }
-    .subtitle {
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin-bottom: 16px;
-    }
-    .mode-toggle {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
+    h1 { font-size: 1.25rem; margin: 0 0 4px; }
+    .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 16px; }
+ 
+    /* MODE TOGGLE */
+    .mode-toggle { display: flex; gap: 8px; margin-bottom: 16px; }
     .mode-toggle button {
-      flex: 1;
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid #ddd;
-      background: var(--card);
-      font-size: 0.85rem;
-      cursor: pointer;
+      flex: 1; padding: 10px; border-radius: 10px;
+      border: 1px solid #ddd; background: var(--card);
+      font-size: 0.85rem; cursor: pointer; color: var(--ink);
     }
     .mode-toggle button.active {
-      background: var(--orange);
-      border-color: var(--orange-dark);
-      color: white;
-      font-weight: 600;
+      background: var(--orange); border-color: var(--orange-dark);
+      color: white; font-weight: 600;
     }
     .mode-toggle button.active.add-mode {
-      background: var(--green);
-      border-color: #2f7d42;
+      background: var(--green); border-color: var(--green-dark);
     }
+ 
+    /* CARDS */
     .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 14px;
+      background: var(--card); border-radius: var(--radius);
+      padding: 16px; margin-bottom: 14px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.06);
     }
+ 
+    /* CAMERA */
     #video-wrap {
-      position: relative;
-      width: 100%;
-      border-radius: var(--radius);
-      overflow: hidden;
-      background: #000;
-      aspect-ratio: 4/3;
+      position: relative; width: 100%; border-radius: var(--radius);
+      overflow: hidden; background: #000; aspect-ratio: 4/3;
       margin-bottom: 12px;
     }
-    #video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    #video { width: 100%; height: 100%; object-fit: cover; }
     .scan-line {
-      position: absolute;
-      left: 8%;
-      right: 8%;
-      top: 50%;
-      height: 2px;
-      background: var(--orange);
+      position: absolute; left: 8%; right: 8%; top: 50%;
+      height: 2px; background: var(--orange);
       box-shadow: 0 0 8px var(--orange);
     }
-    button.primary {
-      width: 100%;
-      padding: 14px;
-      font-size: 1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 10px;
-      background: var(--orange);
-      color: white;
-      cursor: pointer;
+ 
+    /* SEARCH */
+    .search-wrap { position: relative; margin-bottom: 0; }
+    .search-wrap input {
+      width: 100%; padding: 11px 14px; font-size: 0.95rem;
+      border-radius: 10px; border: 1px solid #ddd; margin: 0;
     }
-    button.primary:disabled {
-      background: #ccc;
-      cursor: not-allowed;
+    .search-results {
+      position: absolute; left: 0; right: 0; top: calc(100% + 4px);
+      background: white; border: 1px solid #ddd; border-radius: 10px;
+      z-index: 100; max-height: 220px; overflow-y: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    button.primary.green {
-      background: var(--green);
+    .search-result-item {
+      padding: 11px 14px; cursor: pointer; border-bottom: 1px solid #f0f0f0;
+      font-size: 0.9rem;
     }
-    button.secondary {
-      width: 100%;
-      padding: 12px;
-      font-size: 0.95rem;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      background: white;
-      cursor: pointer;
-      margin-top: 8px;
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: #fdf6ec; }
+    .search-result-sku { font-size: 0.78rem; color: var(--muted); margin-top: 1px; }
+ 
+    /* BASKET */
+    .basket-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px;
     }
-    input[type="number"], input[type="text"], select {
-      width: 100%;
-      padding: 12px;
-      font-size: 1rem;
-      border-radius: 10px;
-      border: 1px solid #ddd;
-      margin-bottom: 12px;
+    .basket-header h3 { margin: 0; font-size: 1rem; }
+    .basket-empty { color: var(--muted); font-size: 0.9rem; text-align: center; padding: 10px 0; }
+    .basket-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 0; border-bottom: 1px solid #f0f0f0;
     }
-    label {
-      font-size: 0.8rem;
-      color: var(--muted);
-      display: block;
-      margin-bottom: 4px;
+    .basket-item:last-child { border-bottom: none; }
+    .basket-item-name { flex: 1; font-size: 0.9rem; font-weight: 600; }
+    .basket-item-sku { font-size: 0.78rem; color: var(--muted); }
+    .basket-qty-wrap { display: flex; align-items: center; gap: 6px; }
+    .basket-qty-btn {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1px solid #ddd; background: white;
+      font-size: 1rem; cursor: pointer; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
     }
-    .product-name {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 2px;
+    .basket-qty { font-size: 0.95rem; font-weight: 600; min-width: 20px; text-align: center; }
+    .basket-remove {
+      background: none; border: none; color: var(--red);
+      font-size: 1.1rem; cursor: pointer; padding: 4px;
     }
-    .product-stock {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-bottom: 14px;
-    }
+ 
+    /* REASON PICKER */
     .reason-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 12px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;
     }
     .reason-btn {
-      padding: 12px 8px;
-      font-size: 0.88rem;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      background: white;
-      cursor: pointer;
-      color: var(--ink);
+      padding: 11px 8px; font-size: 0.88rem;
+      border: 1px solid #ddd; border-radius: 10px;
+      background: white; cursor: pointer; color: var(--ink);
     }
     .reason-btn.selected {
-      background: var(--orange);
-      border-color: var(--orange-dark);
-      color: white;
-      font-weight: 600;
+      background: var(--orange); border-color: var(--orange-dark);
+      color: white; font-weight: 600;
     }
+    .add-mode-active .reason-btn.selected {
+      background: var(--green); border-color: var(--green-dark);
+    }
+ 
+    /* BUTTONS */
+    button.primary {
+      width: 100%; padding: 14px; font-size: 1rem; font-weight: 600;
+      border: none; border-radius: 10px; background: var(--orange);
+      color: white; cursor: pointer; margin-top: 4px;
+    }
+    button.primary.green { background: var(--green); }
+    button.primary:disabled { background: #ccc; cursor: not-allowed; }
+    button.secondary {
+      width: 100%; padding: 12px; font-size: 0.95rem;
+      border: 1px solid #ddd; border-radius: 10px;
+      background: white; cursor: pointer; margin-top: 8px;
+    }
+ 
+    /* STATUS */
     .status {
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 14px;
-      font-size: 0.9rem;
-      display: none;
+      padding: 12px; border-radius: 10px; margin-bottom: 14px;
+      font-size: 0.9rem; display: none;
     }
-    .status.success {
-      background: #e7f5ea;
-      color: var(--green);
-      display: block;
-    }
-    .status.error {
-      background: #fbe9e9;
-      color: var(--red);
-      display: block;
-    }
-    .status.info {
-      background: #fff4e0;
-      color: var(--orange-dark);
-      display: block;
+    .status.success { background: #e7f5ea; color: var(--green); display: block; }
+    .status.error   { background: #fbe9e9; color: var(--red);   display: block; }
+    .status.info    { background: #fff4e0; color: var(--orange-dark); display: block; }
+ 
+    /* MISC */
+    label { font-size: 0.8rem; color: var(--muted); display: block; margin-bottom: 4px; }
+    input[type="text"], input[type="number"], select {
+      width: 100%; padding: 12px; font-size: 1rem;
+      border-radius: 10px; border: 1px solid #ddd; margin-bottom: 12px;
     }
     .hidden { display: none !important; }
     .spinner {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(255,255,255,0.5);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      margin-right: 6px;
-      vertical-align: -2px;
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.5); border-top-color: white;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+      margin-right: 6px; vertical-align: -2px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    #setup-url-card input {
-      font-size: 0.8rem;
-      font-family: monospace;
+    #setup-url-card input { font-size: 0.8rem; font-family: monospace; }
+    .section-label {
+      font-size: 0.75rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
     }
   </style>
 </head>
 <body>
  
-  <h1>📦 Stock Cupboard Scanner</h1>
-  <div class="subtitle" id="subtitle">Scan an item barcode to log it as taken</div>
+<h1>📦 Stock Cupboard Scanner</h1>
+<div class="subtitle" id="subtitle">Scan items or search to build a basket, then submit</div>
  
-  <!-- ONE-TIME SETUP: Apps Script URL -->
-  <div class="card hidden" id="setup-url-card">
-    <label for="apps-script-url">Paste your Apps Script Web App URL here (one-time setup, saved on this device)</label>
-    <input type="text" id="apps-script-url" placeholder="https://script.google.com/macros/s/.../exec">
-    <button class="primary" id="btn-save-url">Save and continue</button>
+<!-- ONE-TIME SETUP: Apps Script URL -->
+<div class="card hidden" id="setup-url-card">
+  <label for="apps-script-url">Paste your Apps Script Web App URL here (one-time setup, saved on this device)</label>
+  <input type="text" id="apps-script-url" placeholder="https://script.google.com/macros/s/.../exec">
+  <button class="primary" id="btn-save-url">Save and continue</button>
+</div>
+ 
+<div id="main-app" class="hidden">
+ 
+  <!-- MODE TOGGLE -->
+  <div class="mode-toggle">
+    <button id="btn-take-mode" class="active">Take stock</button>
+    <button id="btn-add-mode">Add stock</button>
+    <button id="btn-setup-mode">Setup: barcodes</button>
   </div>
  
-  <div id="main-app" class="hidden">
-    <div class="mode-toggle">
-      <button id="btn-take-mode" class="active">Take stock</button>
-      <button id="btn-add-mode">Add stock</button>
-      <button id="btn-setup-mode">Setup: barcodes</button>
-    </div>
- 
+  <!-- SCANNER + SEARCH (shown in take/add modes) -->
+  <div id="scan-search-section">
     <div class="card">
       <div id="video-wrap">
         <video id="video" muted playsinline></video>
         <div class="scan-line"></div>
       </div>
       <button class="primary" id="btn-start-camera">📷 Tap to start camera</button>
-      <button class="secondary hidden" id="btn-rescan">🔄 Scan again</button>
+      <button class="secondary hidden" id="btn-rescan">🔄 Scan another item</button>
     </div>
  
-    <div id="status" class="status"></div>
- 
-    <!-- TAKE STOCK confirm panel -->
-    <div class="card hidden" id="take-panel">
-      <div class="product-name" id="take-product-name"></div>
-      <div class="product-stock" id="take-product-stock"></div>
-      <label for="take-qty">Quantity taken</label>
-      <input type="number" id="take-qty" value="1" min="1" step="1">
- 
-      <label>Reason</label>
-      <div class="reason-grid" id="take-reason-grid">
-        <button type="button" class="reason-btn" data-reason="Marketing">Marketing</button>
-        <button type="button" class="reason-btn" data-reason="Customer">Customer</button>
-        <button type="button" class="reason-btn" data-reason="Warranty">Warranty</button>
-        <button type="button" class="reason-btn" data-reason="Product Testing">Product Testing</button>
-        <button type="button" class="reason-btn" data-reason="Stock Adjust">Stock Adjust</button>
-        <button type="button" class="reason-btn" data-reason="Other">Other</button>
+    <div class="card">
+      <div class="section-label">Or search by name / SKU</div>
+      <div class="search-wrap">
+        <input type="text" id="search-input" placeholder="e.g. Carbon S or R-SC-MC-1" autocomplete="off">
+        <div class="search-results hidden" id="search-results"></div>
       </div>
-      <input type="text" id="take-reason-other-text" class="hidden" placeholder="Type a reason…">
- 
-      <button class="primary" id="btn-confirm-take">Log as taken</button>
     </div>
+  </div>
  
-    <!-- ADD STOCK confirm panel -->
-    <div class="card hidden" id="add-panel">
-      <div class="product-name" id="add-product-name"></div>
-      <div class="product-stock" id="add-product-stock"></div>
-      <label for="add-qty">Quantity received</label>
-      <input type="number" id="add-qty" value="1" min="1" step="1">
+  <!-- BASKET -->
+  <div class="card" id="basket-card">
+    <div class="basket-header">
+      <h3>🛒 Basket</h3>
+      <button class="basket-remove" id="btn-clear-basket" title="Clear basket">Clear all</button>
+    </div>
+    <div id="basket-list">
+      <div class="basket-empty" id="basket-empty">No items yet — scan or search above</div>
+    </div>
+  </div>
  
-      <label>Reason</label>
-      <div class="reason-grid" id="add-reason-grid">
-        <button type="button" class="reason-btn" data-reason="Stock Adjust">Stock Adjust</button>
-        <button type="button" class="reason-btn" data-reason="Return">Return</button>
-        <button type="button" class="reason-btn" data-reason="Other">Other</button>
+  <!-- REASON + SUBMIT (shown when basket has items) -->
+  <div class="card hidden" id="submit-card">
+    <div class="section-label">Reason</div>
+    <div class="reason-grid" id="reason-grid"></div>
+    <input type="text" id="reason-other-text" class="hidden" placeholder="Type a reason…">
+    <button class="primary" id="btn-submit">Submit</button>
+  </div>
+ 
+  <div id="status" class="status"></div>
+ 
+  <!-- SETUP MODE PANEL -->
+  <div id="setup-section" class="hidden">
+    <div class="card">
+      <div id="video-wrap-setup">
+        <div style="position:relative;width:100%;border-radius:var(--radius);overflow:hidden;background:#000;aspect-ratio:4/3;margin-bottom:12px;">
+          <video id="video-setup" muted playsinline style="width:100%;height:100%;object-fit:cover;"></video>
+          <div class="scan-line"></div>
+        </div>
       </div>
-      <input type="text" id="add-reason-other-text" class="hidden" placeholder="Type a reason…">
- 
-      <button class="primary green" id="btn-confirm-add">Log as added</button>
+      <button class="primary" id="btn-start-camera-setup">📷 Tap to start camera</button>
+      <button class="secondary hidden" id="btn-rescan-setup">🔄 Scan another</button>
     </div>
- 
-    <!-- SETUP MODE assign panel -->
-    <div class="card hidden" id="setup-panel">
-      <div class="subtitle">Scanned barcode: <strong id="setup-barcode-display"></strong></div>
+    <div class="card hidden" id="setup-assign-panel">
+      <div class="section-label">Scanned barcode: <strong id="setup-barcode-display"></strong></div>
       <label for="setup-sku-select">Which product is this?</label>
       <select id="setup-sku-select"></select>
       <button class="primary" id="btn-confirm-setup">Save barcode to this product</button>
     </div>
- 
-    <button class="secondary" id="btn-change-url" style="margin-top:20px;">⚙️ Change Apps Script URL</button>
+    <div id="status-setup" class="status"></div>
   </div>
  
-  <script src="https://unpkg.com/@zxing/library@0.20.0/umd/index.min.js"></script>
-  <script>
-    // ---- APPS SCRIPT URL (one-time setup, stored in this browser) ----
-    let APPS_SCRIPT_URL = localStorage.getItem('stockScannerUrl') || '';
+  <button class="secondary" id="btn-change-url" style="margin-top:8px;">⚙️ Change Apps Script URL</button>
+</div>
  
-    function showUrlSetup() {
-      document.getElementById('setup-url-card').classList.remove('hidden');
-      document.getElementById('main-app').classList.add('hidden');
-      document.getElementById('apps-script-url').value = APPS_SCRIPT_URL;
-    }
+<script src="https://unpkg.com/@zxing/library@0.20.0/umd/index.min.js"></script>
+<script>
  
-    function showMainApp() {
-      document.getElementById('setup-url-card').classList.add('hidden');
-      document.getElementById('main-app').classList.remove('hidden');
-    }
+// ---- APPS SCRIPT URL ----
+let APPS_SCRIPT_URL = localStorage.getItem('stockScannerUrl') || '';
  
-    document.getElementById('btn-save-url').addEventListener('click', function () {
-      const url = document.getElementById('apps-script-url').value.trim();
-      if (!url.startsWith('https://script.google.com/')) {
-        alert('That doesn\'t look like a valid Apps Script Web App URL. It should start with https://script.google.com/');
-        return;
+document.getElementById('btn-save-url').addEventListener('click', function () {
+  const url = document.getElementById('apps-script-url').value.trim();
+  if (!url.startsWith('https://script.google.com/')) {
+    alert('That does not look like a valid Apps Script Web App URL.');
+    return;
+  }
+  APPS_SCRIPT_URL = url;
+  localStorage.setItem('stockScannerUrl', url);
+  showMainApp();
+});
+document.getElementById('btn-change-url').addEventListener('click', function () {
+  document.getElementById('setup-url-card').classList.remove('hidden');
+  document.getElementById('main-app').classList.add('hidden');
+  document.getElementById('apps-script-url').value = APPS_SCRIPT_URL;
+});
+function showMainApp() {
+  document.getElementById('setup-url-card').classList.add('hidden');
+  document.getElementById('main-app').classList.remove('hidden');
+}
+if (!APPS_SCRIPT_URL) {
+  document.getElementById('setup-url-card').classList.remove('hidden');
+} else {
+  showMainApp();
+}
+ 
+// ---- API ----
+async function callApi(action, params) {
+  const url = new URL(APPS_SCRIPT_URL);
+  url.searchParams.set('action', action);
+  for (const key in params) url.searchParams.set(key, params[key]);
+  const response = await fetch(url.toString());
+  if (!response.ok) throw new Error('Server error: ' + response.status);
+  const data = await response.json();
+  if (data && data.error) throw new Error(data.error);
+  return data;
+}
+ 
+// ---- STATE ----
+let mode = 'take';
+let basket = []; // [{sku, name, qty}]
+let allProducts = [];
+let selectedReason = '';
+let codeReader = null;
+let codeReaderSetup = null;
+let scanning = false;
+let scanningSetup = false;
+let mediaStream = null;
+let mediaStreamSetup = null;
+let lastScannedCode = null;
+let lastScannedSetupCode = null;
+ 
+const statusEl = document.getElementById('status');
+const statusSetupEl = document.getElementById('status-setup');
+ 
+function showStatus(msg, type, el) {
+  el = el || statusEl;
+  el.textContent = msg;
+  el.className = 'status ' + type;
+}
+function clearStatus(el) {
+  el = el || statusEl;
+  el.className = 'status';
+  el.textContent = '';
+}
+ 
+// ---- MODE ----
+const TAKE_REASONS = ['Marketing','Customer','Warranty','Product Testing','Stock Adjust','Other'];
+const ADD_REASONS  = ['Stock Adjust','Return','Other'];
+ 
+document.getElementById('btn-take-mode').addEventListener('click', () => setMode('take'));
+document.getElementById('btn-add-mode').addEventListener('click',  () => setMode('add'));
+document.getElementById('btn-setup-mode').addEventListener('click',() => setMode('setup'));
+ 
+function setMode(newMode) {
+  mode = newMode;
+  document.getElementById('btn-take-mode').classList.toggle('active', mode === 'take');
+  document.getElementById('btn-add-mode').classList.toggle('active', mode === 'add');
+  document.getElementById('btn-add-mode').classList.toggle('add-mode', mode === 'add');
+  document.getElementById('btn-setup-mode').classList.toggle('active', mode === 'setup');
+ 
+  const isScanMode = mode === 'take' || mode === 'add';
+  document.getElementById('scan-search-section').classList.toggle('hidden', !isScanMode);
+  document.getElementById('basket-card').classList.toggle('hidden', !isScanMode);
+  document.getElementById('setup-section').classList.toggle('hidden', isScanMode);
+  document.getElementById('submit-card').classList.toggle('hidden', true);
+ 
+  if (isScanMode) {
+    document.getElementById('subtitle').textContent =
+      mode === 'take'
+        ? 'Scan or search items to take, then submit'
+        : 'Scan or search items to add, then submit';
+    buildReasonGrid(mode === 'take' ? TAKE_REASONS : ADD_REASONS);
+    renderBasket();
+  } else {
+    document.getElementById('subtitle').textContent = 'Scan a barcode to assign it to a product';
+    stopScanning();
+    if (allProducts.length === 0) loadProducts();
+  }
+  clearStatus();
+}
+ 
+// ---- REASON PICKER ----
+function buildReasonGrid(reasons) {
+  selectedReason = '';
+  document.getElementById('reason-other-text').value = '';
+  document.getElementById('reason-other-text').classList.add('hidden');
+  const grid = document.getElementById('reason-grid');
+  grid.innerHTML = '';
+  grid.className = 'reason-grid' + (mode === 'add' ? ' add-mode-active' : '');
+  reasons.forEach(function (r) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'reason-btn';
+    btn.textContent = r;
+    btn.addEventListener('click', function () {
+      grid.querySelectorAll('.reason-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      const otherInput = document.getElementById('reason-other-text');
+      if (r === 'Other') {
+        otherInput.classList.remove('hidden');
+        otherInput.focus();
+        selectedReason = '';
+      } else {
+        otherInput.classList.add('hidden');
+        selectedReason = r;
       }
-      APPS_SCRIPT_URL = url;
-      localStorage.setItem('stockScannerUrl', url);
-      showMainApp();
     });
+    grid.appendChild(btn);
+  });
+}
  
-    document.getElementById('btn-change-url').addEventListener('click', showUrlSetup);
+function getSelectedReason() {
+  const isOther = document.querySelector('#reason-grid .reason-btn.selected')?.textContent === 'Other';
+  return isOther ? document.getElementById('reason-other-text').value.trim() : selectedReason;
+}
  
-    if (!APPS_SCRIPT_URL) {
-      showUrlSetup();
-    } else {
-      showMainApp();
+// ---- BASKET ----
+function addToBasket(sku, name) {
+  const existing = basket.find(i => i.sku === sku);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    basket.push({ sku, name, qty: 1 });
+  }
+  renderBasket();
+  showStatus('Added: ' + name, 'success');
+  setTimeout(() => clearStatus(), 2000);
+}
+ 
+function renderBasket() {
+  const list = document.getElementById('basket-list');
+  const empty = document.getElementById('basket-empty');
+  const submitCard = document.getElementById('submit-card');
+ 
+  list.querySelectorAll('.basket-item').forEach(el => el.remove());
+ 
+  if (basket.length === 0) {
+    empty.classList.remove('hidden');
+    submitCard.classList.add('hidden');
+    return;
+  }
+ 
+  empty.classList.add('hidden');
+  submitCard.classList.remove('hidden');
+ 
+  basket.forEach(function (item, idx) {
+    const row = document.createElement('div');
+    row.className = 'basket-item';
+    row.innerHTML =
+      '<div style="flex:1">' +
+        '<div class="basket-item-name">' + item.name + '</div>' +
+        '<div class="basket-item-sku">' + item.sku + '</div>' +
+      '</div>' +
+      '<div class="basket-qty-wrap">' +
+        '<button class="basket-qty-btn" data-action="dec" data-idx="' + idx + '">−</button>' +
+        '<div class="basket-qty">' + item.qty + '</div>' +
+        '<button class="basket-qty-btn" data-action="inc" data-idx="' + idx + '">+</button>' +
+      '</div>' +
+      '<button class="basket-remove" data-action="remove" data-idx="' + idx + '">✕</button>';
+    list.appendChild(row);
+  });
+ 
+  list.querySelectorAll('[data-action]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const idx = parseInt(btn.dataset.idx);
+      if (btn.dataset.action === 'inc') {
+        basket[idx].qty += 1;
+      } else if (btn.dataset.action === 'dec') {
+        basket[idx].qty -= 1;
+        if (basket[idx].qty <= 0) basket.splice(idx, 1);
+      } else if (btn.dataset.action === 'remove') {
+        basket.splice(idx, 1);
+      }
+      renderBasket();
+    });
+  });
+}
+ 
+document.getElementById('btn-clear-basket').addEventListener('click', function () {
+  basket = [];
+  renderBasket();
+});
+ 
+// ---- SUBMIT ----
+document.getElementById('btn-submit').addEventListener('click', async function () {
+  const reason = getSelectedReason();
+  if (!reason) {
+    showStatus('Please choose a reason before submitting.', 'error');
+    return;
+  }
+  if (basket.length === 0) {
+    showStatus('Basket is empty.', 'error');
+    return;
+  }
+ 
+  const btn = this;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Submitting…';
+  clearStatus();
+ 
+  const action = mode === 'take' ? 'takeStock' : 'addStock';
+  const errors = [];
+ 
+  for (const item of basket) {
+    try {
+      await callApi(action, { sku: item.sku, qty: item.qty, reason: reason });
+    } catch (err) {
+      errors.push(item.name + ': ' + err.message);
     }
+  }
  
-    // ---- API CALL HELPER ----
-    async function callApi(action, params) {
-      const url = new URL(APPS_SCRIPT_URL);
-      url.searchParams.set('action', action);
-      for (const key in params) {
-        url.searchParams.set(key, params[key]);
-      }
-      const response = await fetch(url.toString());
-      if (!response.ok) {
-        throw new Error('Server error: ' + response.status);
-      }
-      const data = await response.json();
-      if (data && data.error) {
-        throw new Error(data.error);
-      }
-      return data;
+  btn.disabled = false;
+  btn.textContent = 'Submit';
+ 
+  if (errors.length > 0) {
+    showStatus('Some items failed: ' + errors.join('; '), 'error');
+  } else {
+    const verb = mode === 'take' ? 'taken' : 'added';
+    showStatus('✅ ' + basket.length + ' item(s) ' + verb + ' (' + reason + ')', 'success');
+    basket = [];
+    selectedReason = '';
+    buildReasonGrid(mode === 'take' ? TAKE_REASONS : ADD_REASONS);
+    renderBasket();
+    lastScannedCode = null;
+  }
+});
+ 
+// ---- CAMERA (main scanner) ----
+async function startScanning() {
+  if (scanning) return;
+  scanning = true;
+  clearStatus();
+  try {
+    if (!codeReader) {
+      const hints = new Map();
+      hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+        ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
+        ZXing.BarcodeFormat.UPC_A,  ZXing.BarcodeFormat.UPC_E,
+        ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.CODE_39,
+        ZXing.BarcodeFormat.QR_CODE
+      ]);
+      codeReader = new ZXing.BrowserMultiFormatReader(hints);
     }
- 
-    // ---- STATE ----
-    let mode = 'take'; // 'take' | 'add' | 'setup'
-    let codeReader = null;
-    let scanning = false;
-    let lastScannedCode = null;
-    let allProducts = [];
-    let mediaStream = null;
- 
     const videoEl = document.getElementById('video');
-    const statusEl = document.getElementById('status');
-    const takePanel = document.getElementById('take-panel');
-    const addPanel = document.getElementById('add-panel');
-    const setupPanel = document.getElementById('setup-panel');
-    const subtitleEl = document.getElementById('subtitle');
- 
-    // ---- MODE SWITCHING ----
-    document.getElementById('btn-take-mode').addEventListener('click', function () { setMode('take'); });
-    document.getElementById('btn-add-mode').addEventListener('click', function () { setMode('add'); });
-    document.getElementById('btn-setup-mode').addEventListener('click', function () { setMode('setup'); });
- 
-    function setMode(newMode) {
-      mode = newMode;
-      const takeBtn = document.getElementById('btn-take-mode');
-      const addBtn = document.getElementById('btn-add-mode');
-      const setupBtn = document.getElementById('btn-setup-mode');
-      takeBtn.classList.toggle('active', mode === 'take');
-      addBtn.classList.toggle('active', mode === 'add');
-      addBtn.classList.toggle('add-mode', mode === 'add');
-      setupBtn.classList.toggle('active', mode === 'setup');
- 
-      if (mode === 'take') {
-        subtitleEl.textContent = 'Scan an item barcode to log it as taken';
-      } else if (mode === 'add') {
-        subtitleEl.textContent = 'Scan an item barcode to log new stock arriving';
-      } else {
-        subtitleEl.textContent = 'Scan a barcode, then tell us which product it belongs to';
-      }
- 
-      hidePanels();
-      clearStatus();
-      if (mode === 'setup' && allProducts.length === 0) {
-        loadProducts();
-      }
-    }
- 
-    function hidePanels() {
-      takePanel.classList.add('hidden');
-      addPanel.classList.add('hidden');
-      setupPanel.classList.add('hidden');
-    }
- 
-    function showStatus(message, type) {
-      statusEl.textContent = message;
-      statusEl.className = 'status ' + type;
-    }
-    function clearStatus() {
-      statusEl.className = 'status';
-      statusEl.textContent = '';
-    }
- 
-    // ---- CAMERA / SCANNING ----
-    async function startScanning() {
-      if (scanning) return;
-      scanning = true;
-      clearStatus();
- 
-      try {
-        if (!codeReader) {
-          // Explicitly tell ZXing which barcode formats to look for. Without
-          // this, the default "try everything" mode can be unreliable at
-          // detecting standard 1D retail barcodes (EAN-13, UPC-A, Code128
-          // etc.) even though the camera and image are perfectly fine.
-          const hints = new Map();
-          hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
-            ZXing.BarcodeFormat.EAN_13,
-            ZXing.BarcodeFormat.EAN_8,
-            ZXing.BarcodeFormat.UPC_A,
-            ZXing.BarcodeFormat.UPC_E,
-            ZXing.BarcodeFormat.CODE_128,
-            ZXing.BarcodeFormat.CODE_39,
-            ZXing.BarcodeFormat.QR_CODE
-          ]);
-          codeReader = new ZXing.BrowserMultiFormatReader(hints);
-        }
- 
-        try {
-          mediaStream = await navigator.mediaDevices.getUserMedia({
-            video: {
-              facingMode: { ideal: 'environment' },
-              width: { ideal: 1280 },
-              height: { ideal: 720 }
-            },
-            audio: false
-          });
-        } catch (e) {
-          mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        }
- 
-        videoEl.srcObject = mediaStream;
-        await videoEl.play();
-        showStatus('Scanning… point the camera at a barcode', 'info');
- 
-        codeReader.decodeFromStream(mediaStream, videoEl, (result, err) => {
-          if (result) {
-            const code = result.getText();
-            if (code !== lastScannedCode) {
-              lastScannedCode = code;
-              handleScan(code);
-            }
-          }
-        });
-      } catch (e) {
-        let msg = 'Camera error: ' + e.message;
-        if (e.name === 'NotAllowedError') {
-          msg = 'Camera access was denied. Check your browser/phone Settings > Camera permissions for this site, then reload.';
-        } else if (e.name === 'NotFoundError') {
-          msg = 'No camera was found on this device.';
-        }
-        showStatus(msg, 'error');
-        scanning = false;
-      }
-    }
- 
-    function stopScanning() {
-      if (codeReader) {
-        try { codeReader.reset(); } catch (e) {}
-      }
-      if (mediaStream) {
-        mediaStream.getTracks().forEach(track => track.stop());
-        mediaStream = null;
-      }
-      scanning = false;
-    }
- 
-    document.getElementById('btn-start-camera').addEventListener('click', function () {
-      this.classList.add('hidden');
-      document.getElementById('btn-rescan').classList.remove('hidden');
-      startScanning();
-    });
- 
-    document.getElementById('btn-rescan').addEventListener('click', function () {
-      lastScannedCode = null;
-      hidePanels();
-      clearStatus();
-      if (!scanning) startScanning();
-    });
- 
-    function handleScan(barcode) {
-      stopScanning();
-      if (mode === 'take') {
-        handleTakeScan(barcode);
-      } else if (mode === 'add') {
-        handleAddScan(barcode);
-      } else {
-        handleSetupScan(barcode);
-      }
-    }
- 
-    // ---- REASON PICKER (shared helper, used by both Take and Add panels) ----
-    const reasonState = { take: '', add: '' };
- 
-    function setupReasonPicker(prefix) {
-      const grid = document.getElementById(prefix + '-reason-grid');
-      const otherInput = document.getElementById(prefix + '-reason-other-text');
-      grid.querySelectorAll('.reason-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          grid.querySelectorAll('.reason-btn').forEach(b => b.classList.remove('selected'));
-          btn.classList.add('selected');
-          if (btn.dataset.reason === 'Other') {
-            otherInput.classList.remove('hidden');
-            otherInput.focus();
-            reasonState[prefix] = ''; // filled in from the text box on submit
-          } else {
-            otherInput.classList.add('hidden');
-            reasonState[prefix] = btn.dataset.reason;
-          }
-        });
+    try {
+      mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
       });
+    } catch (e) {
+      mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
     }
-    setupReasonPicker('take');
-    setupReasonPicker('add');
- 
-    function resetReasonPicker(prefix) {
-      reasonState[prefix] = '';
-      document.getElementById(prefix + '-reason-grid').querySelectorAll('.reason-btn').forEach(b => b.classList.remove('selected'));
-      const otherInput = document.getElementById(prefix + '-reason-other-text');
-      otherInput.value = '';
-      otherInput.classList.add('hidden');
-    }
- 
-    function getSelectedReason(prefix) {
-      const grid = document.getElementById(prefix + '-reason-grid');
-      const selectedBtn = grid.querySelector('.reason-btn.selected');
-      const isOtherSelected = selectedBtn?.dataset.reason === 'Other';
-      const otherText = document.getElementById(prefix + '-reason-other-text').value.trim();
-      return isOtherSelected ? otherText : reasonState[prefix];
-    }
- 
-    // ---- TAKE STOCK FLOW ----
-    async function handleTakeScan(barcode) {
-      showStatus('Looking up barcode…', 'info');
-      try {
-        const product = await callApi('lookup', { barcode: barcode });
-        if (!product) {
-          showStatus('No product found for barcode ' + barcode + '. Use "Setup: barcodes" to assign it.', 'error');
-          return;
-        }
+    videoEl.srcObject = mediaStream;
+    await videoEl.play();
+    showStatus('Scanning… point the camera at a barcode', 'info');
+    codeReader.decodeFromStream(mediaStream, videoEl, async (result, err) => {
+      if (result) {
+        const code = result.getText();
+        if (code === lastScannedCode) return;
+        lastScannedCode = code;
         clearStatus();
-        document.getElementById('take-product-name').textContent = product.name;
-        document.getElementById('take-product-stock').textContent =
-          'Current stock: ' + product.stock + (product.target != null ? ' (target ' + product.target + ')' : '');
-        document.getElementById('take-qty').value = 1;
-        resetReasonPicker('take');
-        takePanel.classList.remove('hidden');
-        window.currentTakeSku = product.sku;
-      } catch (err) {
-        showStatus('Error: ' + err.message, 'error');
-      }
-    }
- 
-    document.getElementById('btn-confirm-take').addEventListener('click', async function () {
-      const qty = document.getElementById('take-qty').value;
-      const reason = getSelectedReason('take');
- 
-      if (!reason) {
-        showStatus('Please choose a reason (or type one under "Other") before logging.', 'error');
-        return;
-      }
- 
-      const btn = this;
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span>Saving…';
-      try {
-        const result = await callApi('takeStock', { sku: window.currentTakeSku, qty: qty, reason: reason });
-        showStatus('✅ Logged: ' + result.qty + ' x ' + result.name + ' taken (' + reason + '). New stock: ' + result.newStock, 'success');
-        takePanel.classList.add('hidden');
-        lastScannedCode = null;
-        startScanning();
-      } catch (err) {
-        showStatus('Error: ' + err.message, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Log as taken';
+        await handleBarcodeScan(code);
       }
     });
+  } catch (e) {
+    let msg = 'Camera error: ' + e.message;
+    if (e.name === 'NotAllowedError') msg = 'Camera access was denied. Check Settings and reload.';
+    if (e.name === 'NotFoundError') msg = 'No camera found on this device.';
+    showStatus(msg, 'error');
+    scanning = false;
+  }
+}
  
-    // ---- ADD STOCK FLOW ----
-    async function handleAddScan(barcode) {
-      showStatus('Looking up barcode…', 'info');
-      try {
-        const product = await callApi('lookup', { barcode: barcode });
-        if (!product) {
-          showStatus('No product found for barcode ' + barcode + '. Use "Setup: barcodes" to assign it.', 'error');
-          return;
-        }
-        clearStatus();
-        document.getElementById('add-product-name').textContent = product.name;
-        document.getElementById('add-product-stock').textContent =
-          'Current stock: ' + product.stock + (product.target != null ? ' (target ' + product.target + ')' : '');
-        document.getElementById('add-qty').value = 1;
-        resetReasonPicker('add');
-        addPanel.classList.remove('hidden');
-        window.currentAddSku = product.sku;
-      } catch (err) {
-        showStatus('Error: ' + err.message, 'error');
-      }
+function stopScanning() {
+  if (codeReader) { try { codeReader.reset(); } catch(e) {} }
+  if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+  scanning = false;
+  lastScannedCode = null;
+}
+ 
+document.getElementById('btn-start-camera').addEventListener('click', function () {
+  this.classList.add('hidden');
+  document.getElementById('btn-rescan').classList.remove('hidden');
+  startScanning();
+});
+document.getElementById('btn-rescan').addEventListener('click', function () {
+  lastScannedCode = null;
+  clearStatus();
+});
+ 
+// ---- BARCODE SCAN HANDLER (main) ----
+async function handleBarcodeScan(barcode) {
+  showStatus('Looking up barcode…', 'info');
+  try {
+    const product = await callApi('lookup', { barcode });
+    if (!product) {
+      showStatus('Barcode ' + barcode + ' not found. Assign it in Setup mode, or search above.', 'error');
+      return;
     }
+    clearStatus();
+    addToBasket(product.sku, product.name);
+  } catch (err) {
+    showStatus('Error: ' + err.message, 'error');
+  }
+}
  
-    document.getElementById('btn-confirm-add').addEventListener('click', async function () {
-      const qty = document.getElementById('add-qty').value;
-      const reason = getSelectedReason('add');
+// ---- SEARCH ----
+let searchTimeout = null;
+const searchInput = document.getElementById('search-input');
+const searchResultsEl = document.getElementById('search-results');
  
-      if (!reason) {
-        showStatus('Please choose a reason (or type one under "Other") before logging.', 'error');
-        return;
-      }
+searchInput.addEventListener('input', function () {
+  clearTimeout(searchTimeout);
+  const query = this.value.trim().toLowerCase();
+  if (query.length < 2) { searchResultsEl.classList.add('hidden'); return; }
+  searchTimeout = setTimeout(() => runSearch(query), 200);
+});
  
-      const btn = this;
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span>Saving…';
-      try {
-        const result = await callApi('addStock', { sku: window.currentAddSku, qty: qty, reason: reason });
-        showStatus('✅ Logged: ' + result.qty + ' x ' + result.name + ' added (' + reason + '). New stock: ' + result.newStock, 'success');
-        addPanel.classList.add('hidden');
-        lastScannedCode = null;
-        startScanning();
-      } catch (err) {
-        showStatus('Error: ' + err.message, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Log as added';
+searchInput.addEventListener('blur', function () {
+  setTimeout(() => searchResultsEl.classList.add('hidden'), 150);
+});
+ 
+async function runSearch(query) {
+  if (allProducts.length === 0) {
+    await loadProducts();
+  }
+  const matches = allProducts.filter(p =>
+    p.name.toLowerCase().includes(query) || p.sku.toLowerCase().includes(query)
+  ).slice(0, 8);
+ 
+  searchResultsEl.innerHTML = '';
+  if (matches.length === 0) {
+    searchResultsEl.innerHTML = '<div class="search-result-item" style="color:var(--muted)">No results found</div>';
+  } else {
+    matches.forEach(function (p) {
+      const div = document.createElement('div');
+      div.className = 'search-result-item';
+      div.innerHTML = '<div>' + p.name + '</div><div class="search-result-sku">' + p.sku + '</div>';
+      div.addEventListener('click', function () {
+        addToBasket(p.sku, p.name);
+        searchInput.value = '';
+        searchResultsEl.classList.add('hidden');
+      });
+      searchResultsEl.appendChild(div);
+    });
+  }
+  searchResultsEl.classList.remove('hidden');
+}
+ 
+// ---- PRODUCTS (for search + setup dropdown) ----
+async function loadProducts() {
+  try {
+    allProducts = await callApi('products', {});
+  } catch (err) {
+    showStatus('Could not load product list: ' + err.message, 'error');
+  }
+}
+loadProducts(); // pre-load on page open so search is instant
+ 
+// ---- SETUP MODE CAMERA ----
+async function startScanningSetup() {
+  if (scanningSetup) return;
+  scanningSetup = true;
+  clearStatus(statusSetupEl);
+  try {
+    if (!codeReaderSetup) {
+      const hints = new Map();
+      hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+        ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.EAN_8,
+        ZXing.BarcodeFormat.UPC_A,  ZXing.BarcodeFormat.UPC_E,
+        ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.CODE_39,
+        ZXing.BarcodeFormat.QR_CODE
+      ]);
+      codeReaderSetup = new ZXing.BrowserMultiFormatReader(hints);
+    }
+    const videoEl = document.getElementById('video-setup');
+    try {
+      mediaStreamSetup = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      });
+    } catch (e) {
+      mediaStreamSetup = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    }
+    videoEl.srcObject = mediaStreamSetup;
+    await videoEl.play();
+    showStatus('Scanning… point camera at the barcode to assign', 'info', statusSetupEl);
+    codeReaderSetup.decodeFromStream(mediaStreamSetup, videoEl, (result, err) => {
+      if (result) {
+        const code = result.getText();
+        if (code === lastScannedSetupCode) return;
+        lastScannedSetupCode = code;
+        document.getElementById('setup-barcode-display').textContent = code;
+        document.getElementById('setup-assign-panel').classList.remove('hidden');
+        clearStatus(statusSetupEl);
       }
     });
+  } catch (e) {
+    let msg = 'Camera error: ' + e.message;
+    if (e.name === 'NotAllowedError') msg = 'Camera access was denied. Check Settings and reload.';
+    showStatus(msg, 'error', statusSetupEl);
+    scanningSetup = false;
+  }
+}
  
-    // ---- SETUP MODE FLOW ----
-    async function loadProducts() {
-      try {
-        const products = await callApi('products', {});
-        allProducts = products;
-        const select = document.getElementById('setup-sku-select');
-        select.innerHTML = '';
-        products.forEach(function (p) {
-          const opt = document.createElement('option');
-          opt.value = p.sku;
-          opt.textContent = (p.hasBarcode ? '✓ ' : '') + p.name + ' (' + p.sku + ')';
-          select.appendChild(opt);
-        });
-      } catch (err) {
-        showStatus('Could not load product list: ' + err.message, 'error');
-      }
-    }
+function stopScanningSetup() {
+  if (codeReaderSetup) { try { codeReaderSetup.reset(); } catch(e) {} }
+  if (mediaStreamSetup) { mediaStreamSetup.getTracks().forEach(t => t.stop()); mediaStreamSetup = null; }
+  scanningSetup = false;
+  lastScannedSetupCode = null;
+}
  
-    function handleSetupScan(barcode) {
-      clearStatus();
-      document.getElementById('setup-barcode-display').textContent = barcode;
-      setupPanel.classList.remove('hidden');
-      window.currentSetupBarcode = barcode;
-    }
+document.getElementById('btn-start-camera-setup').addEventListener('click', function () {
+  this.classList.add('hidden');
+  document.getElementById('btn-rescan-setup').classList.remove('hidden');
+  startScanningSetup();
+});
+document.getElementById('btn-rescan-setup').addEventListener('click', function () {
+  lastScannedSetupCode = null;
+  document.getElementById('setup-assign-panel').classList.add('hidden');
+  clearStatus(statusSetupEl);
+});
  
-    document.getElementById('btn-confirm-setup').addEventListener('click', async function () {
-      const sku = document.getElementById('setup-sku-select').value;
-      const barcode = window.currentSetupBarcode;
-      const btn = this;
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span>Saving…';
-      try {
-        const result = await callApi('recordBarcode', { sku: sku, barcode: barcode });
-        showStatus('✅ Barcode ' + result.barcode + ' saved to ' + result.name, 'success');
-        setupPanel.classList.add('hidden');
-        lastScannedCode = null;
-        loadProducts();
-        startScanning();
-      } catch (err) {
-        showStatus('Error: ' + err.message, 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Save barcode to this product';
-      }
-    });
-  </script>
+// ---- SETUP MODE ASSIGN ----
+async function loadSetupDropdown() {
+  if (allProducts.length === 0) await loadProducts();
+  const select = document.getElementById('setup-sku-select');
+  select.innerHTML = '';
+  allProducts.forEach(function (p) {
+    const opt = document.createElement('option');
+    opt.value = p.sku;
+    opt.textContent = (p.hasBarcode ? '✓ ' : '') + p.name + ' (' + p.sku + ')';
+    select.appendChild(opt);
+  });
+}
+ 
+document.getElementById('btn-setup-mode').addEventListener('click', loadSetupDropdown);
+ 
+document.getElementById('btn-confirm-setup').addEventListener('click', async function () {
+  const sku = document.getElementById('setup-sku-select').value;
+  const barcode = document.getElementById('setup-barcode-display').textContent;
+  const btn = this;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Saving…';
+  try {
+    const result = await callApi('recordBarcode', { sku, barcode });
+    showStatus('✅ Barcode saved to ' + result.name, 'success', statusSetupEl);
+    document.getElementById('setup-assign-panel').classList.add('hidden');
+    lastScannedSetupCode = null;
+    allProducts = []; // force refresh next time
+    loadSetupDropdown();
+  } catch (err) {
+    showStatus('Error: ' + err.message, 'error', statusSetupEl);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Save barcode to this product';
+  }
+});
+ 
+// ---- INIT ----
+setMode('take');
+ 
+</script>
 </body>
 </html>
